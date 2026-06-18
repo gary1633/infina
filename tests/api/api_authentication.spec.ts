@@ -54,7 +54,6 @@ test.describe('Auth API - Register & Login', () => {
       expect(otpData).toHaveProperty('expiresIn');
       const requestId = otpData.requestId;
 
-      // 2. Call register API with valid OTP and correct headers
       const registerResponse = await request.post('/api/proxy/api/auth/register', {
         headers: {
           'x-otp-phone': phone,
@@ -69,8 +68,7 @@ test.describe('Auth API - Register & Login', () => {
       
       expect(registerResponse.status()).toBe(200);
       const registerData = await registerResponse.json();
-      
-      // Assert AuthResDto structure from the proxy endpoint (returns user profile wrapped in "user" object, tokens are set in cookies)
+    
       expect(registerData).toHaveProperty('user');
       const user = registerData.user;
       expect(user.phone).toBe(phone);
@@ -78,7 +76,6 @@ test.describe('Auth API - Register & Login', () => {
       expect(user).toHaveProperty('pid');
       expect(user).toHaveProperty('uid');
 
-      // Assert cookies are set
       const cookies = registerResponse.headers()['set-cookie'];
       expect(cookies).toBeDefined();
       expect(cookies).toContain('aaa_at');
@@ -88,7 +85,6 @@ test.describe('Auth API - Register & Login', () => {
     test('Negative Case: Should fail registration with incorrect OTP code', async ({ request }) => {
       const tempPhone = generateRandomPhone();
       
-      // 1. Request OTP
       const otpResponse = await request.post('/api/proxy/api/auth/otp/send', {
         data: {
           phone: tempPhone,
@@ -98,7 +94,6 @@ test.describe('Auth API - Register & Login', () => {
       expect(otpResponse.ok()).toBeTruthy();
       const { requestId } = await otpResponse.json();
 
-      // 2. Try registering with invalid OTP
       const registerResponse = await request.post('/api/proxy/api/auth/register', {
         headers: {
           'x-otp-phone': tempPhone,
@@ -125,7 +120,6 @@ test.describe('Auth API - Register & Login', () => {
       // Create a registered user first
       const { phone, name } = await registerTempUser(request);
 
-      // 1. Send OTP for login
       const otpResponse = await request.post('/api/proxy/api/auth/otp/send', {
         data: {
           phone,
@@ -152,7 +146,6 @@ test.describe('Auth API - Register & Login', () => {
       const loginData = await loginResponse.json();
       console.log('LOGIN RESPONSE BODY:', JSON.stringify(loginData));
 
-      // Assert structure (proxy login returns user profile wrapped in "user" object, matching register)
       expect(loginData).toHaveProperty('user');
       const user = loginData.user;
       expect(user.phone).toBe(phone);
@@ -160,7 +153,6 @@ test.describe('Auth API - Register & Login', () => {
       expect(user).toHaveProperty('pid');
       expect(user).toHaveProperty('uid');
 
-      // Assert cookies are set
       const cookies = loginResponse.headers()['set-cookie'];
       expect(cookies).toBeDefined();
       expect(cookies).toContain('aaa_at');
@@ -168,10 +160,8 @@ test.describe('Auth API - Register & Login', () => {
     });
 
     test('Negative Case: Should fail login with incorrect OTP code', async ({ request }) => {
-      // Create a registered user first
       const { phone } = await registerTempUser(request);
 
-      // 1. Send OTP
       const otpResponse = await request.post('/api/proxy/api/auth/otp/send', {
         data: {
           phone,
@@ -182,7 +172,6 @@ test.describe('Auth API - Register & Login', () => {
       
       const { requestId } = await otpResponse.json();
 
-      // 2. Call login with incorrect OTP
       const loginResponse = await request.post('/api/proxy/api/auth/login', {
         headers: {
           'x-otp-phone': phone,
