@@ -2,23 +2,26 @@
 
 This repository contains a Playwright automation test suite written in TypeScript for testing registration and login scenarios on the Infina application (`https://nomi-staging-3c09.up.railway.app/`).
 
-The project adheres to the **Page Object Model (POM)** design pattern, uses environment variables for configuration, avoids arbitrary timeouts, and runs tests in a serialized suite.
+The project adheres to the **Page Object Model (POM)** design pattern.
 
 ## Project Structure
 
 ```text
 ├── pages/
-│   ├── home.page.ts        # POM for the landing page
-│   ├── register.page.ts    # POM for the sign-up form
-│   ├── login.page.ts       # POM for the login form
-│   └── otp.page.ts         # POM for the 6-digit OTP verification & toast validation
+│   ├── home.page.ts
+│   ├── register.page.ts
+│   ├── login.page.ts
+│   └── otp.page.ts
 ├── tests/
-│   └── auth.spec.ts        # E2E test specifications
-├── playwright.config.ts    # Playwright configuration
-├── .env                    # Local environment variables (git-ignored)
-├── .gitignore              # Files to ignore in git
-├── package.json            # Node.js dependencies
-└── README.md               # Run instructions & documentation
+│   ├── api/
+│   │   └── api_authentication.spec.ts
+│   └── web/
+│       └── authentication.spec.ts
+├── playwright.config.ts
+├── .env
+├── .gitignore
+├── package.json
+└── README.md
 ```
 
 ## Setup Instructions
@@ -54,10 +57,24 @@ TEST_NAME=AutoTest
 
 ## Running the Tests
 
-To execute the entire test suite in headless mode (default):
+To execute all tests (both web and api) in headless mode (default):
 
 ```bash
 npx playwright test
+```
+
+### Running Specific Test Groups
+
+To run only the Web/UI E2E tests:
+
+```bash
+npx playwright test tests/web/
+```
+
+To run only the API tests:
+
+```bash
+npx playwright test tests/api/
 ```
 
 ### Running with UI / Headed Mode
